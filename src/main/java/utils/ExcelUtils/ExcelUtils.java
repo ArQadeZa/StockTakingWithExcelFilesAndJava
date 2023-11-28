@@ -21,7 +21,6 @@ public class ExcelUtils {
         properties.load(new FileInputStream("src\\main\\java\\resources\\Resources.properties"));
         List<List<String>> listOfRows = new ArrayList<>();
 
-
         // Create a Workbook from the Excel file
         Workbook workbook = new XSSFWorkbook(new FileInputStream(properties.getProperty("excelFileLocation")));
         Sheet sheet = workbook.getSheetAt(0);
@@ -31,6 +30,7 @@ public class ExcelUtils {
         int progressCount = 1500;
         container.setSize(900, 150);
         container.setVisible(true);
+        container.setLocationRelativeTo(null);
 
         //create a progressbar
         JProgressBar jProgressBar = new JProgressBar(0, sheet.getPhysicalNumberOfRows());
@@ -49,15 +49,19 @@ public class ExcelUtils {
                 String cellValue = getCellValue(cell, workbook);
                 rowList.add(cellValue);
             }
-            Thread.sleep(20);
+
+            //increment progressbar
             jProgressBar.setValue(jProgressBar.getValue() + 1);
             listOfRows.add(rowList);
-
         }
 
+        //finish progressbar
         jProgressBar.setValue(progressCount);
+
+        //remove progressbar from memory
         container.dispose();
-        return listOfRows.stream().filter(l -> l.size() == 5). collect(Collectors.toList());
+
+        return listOfRows.stream().filter(l -> l.size() == 6). collect(Collectors.toList());
     }
 
 
