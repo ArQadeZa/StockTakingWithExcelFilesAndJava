@@ -2,9 +2,12 @@ package swing.dataPanelTemplate;
 
 import lombok.Getter;
 import lombok.Setter;
+import runner.Runner;
+import utils.ExcelUtils.ExcelUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 
 @Getter
 @Setter
@@ -24,8 +27,13 @@ public class DataPanelTemplate extends JPanel {
     private JButton btnDecrease;
     private JButton removeElementButton;
     private JTextArea txtDescription;
+    private JButton btnAddElement;
 
 
+    //TODO: ADD FUNCTIONALITY TO + & - BUTTONS
+    //TODO: ADD FUNCTIONALITY TO REMOVE BUTTON
+    //TODO: ADD FUNCTIONALITY TO UPDATE THE EXCEL FILE IF ANYTHING CHANGES
+    //TODO: ADD AN ADD Button
     public DataPanelTemplate() {
         initComponents();
         setLayout(new FlowLayout(FlowLayout.LEFT));
@@ -53,10 +61,37 @@ public class DataPanelTemplate extends JPanel {
         btnDecrease = new JButton("-");
         removeElementButton = new JButton("Remove element");
 
+        //create an on click method for the button
+        removeElementButton.addActionListener(al -> {
+            String code = txtCode.getText();
+            int response = JOptionPane.showConfirmDialog(null, String.format("Are you sure you want to delete element with code %s ?", code));
+
+           //if the response is yes remove the element from the list
+            if(response == 0){
+
+                //find element that contains the code
+                List<String> line = Runner.listOfRows.stream().filter(l-> l.contains(code)).findAny().get();
+                //remove element
+                Runner.listOfRows.remove(line);
+
+                //save changes to file
+                boolean saved =  ExcelUtils.writeExcelFile(Runner.listOfRows);
+
+                //Display message to say element has been removed
+                if(saved){
+                    JOptionPane.showMessageDialog(Runner.mainForm, String.format("The element with code %s has been removed", line.get(0)));
+                }
+
+                //update ui
+                Runner.mainForm.updateDisplay();
+            }
+        });
+
+
         lblDescription = new JLabel("Description:");
         txtDescription = new JTextArea(5, 20);
         txtDescription.setLineWrap(true);
-
+        btnAddElement = new JButton("Add Product");
     }
 
     private void addComponentsToPanel() {
@@ -83,5 +118,6 @@ public class DataPanelTemplate extends JPanel {
         add(btnIncrease);
         add(btnDecrease);
         add(removeElementButton);
+        add(btnAddElement);
     }
 }

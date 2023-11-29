@@ -5,7 +5,10 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import javax.swing.*;
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -13,6 +16,41 @@ import java.util.stream.Collectors;
 
 
 public class ExcelUtils {
+
+    public static boolean writeExcelFile(List<List<String>> listOfLines) {
+        //load properties
+        try {
+            Properties properties = new Properties();
+            properties.load(new FileInputStream("src\\main\\java\\resources\\Resources.properties"));
+
+            // Create a Workbook from the Excel file
+            Workbook workbook = new XSSFWorkbook(new FileInputStream(properties.getProperty("excelFileLocation")));
+            Sheet sheet = workbook.getSheetAt(0);
+
+            //row
+            for (int i = 0; i < listOfLines.size(); i++) {
+                Row row = sheet.createRow(i);
+
+                //cell
+                for (int j = 0; j < listOfLines.get(i).size(); j++) {
+                    Cell cell = row.createCell(j);
+                    cell.setCellValue(listOfLines.get(i).get(j));
+                }
+            }
+
+            //create an output stream to write to file
+            FileOutputStream fileOutputStream = new FileOutputStream(new File(properties.getProperty("excelFileLocation")));
+            workbook.write(fileOutputStream);
+            fileOutputStream.close();
+
+            //return true to display that the file has been written
+            return true;
+        } catch (IOException e) {
+            //return false to display that the file has not been written
+            return false;
+        }
+
+    }
 
     @SneakyThrows
     public static List<List<String>> readExcelFile() {
@@ -61,7 +99,7 @@ public class ExcelUtils {
         //remove progressbar from memory
         container.dispose();
 
-        return listOfRows.stream().filter(l -> l.size() == 6). collect(Collectors.toList());
+        return listOfRows.stream().filter(l -> l.size() == 6).collect(Collectors.toList());
     }
 
 
