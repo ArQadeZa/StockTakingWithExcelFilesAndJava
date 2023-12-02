@@ -17,6 +17,11 @@ import java.util.stream.Collectors;
 
 public class ExcelUtils {
 
+    /**
+     * write data back into Excel file
+     * @param listOfLines  - list that contains the rows to add to the file
+     * @return boolean based on if the addition was a success
+     */
     public static boolean writeExcelFile(List<List<String>> listOfLines) {
         //load properties
         try {
@@ -52,6 +57,10 @@ public class ExcelUtils {
 
     }
 
+    /**
+     * read  data from Excel file
+     * @return list containing all the rows inside the excel file
+     */
     @SneakyThrows
     public static List<List<String>> readExcelFile() {
         //load properties

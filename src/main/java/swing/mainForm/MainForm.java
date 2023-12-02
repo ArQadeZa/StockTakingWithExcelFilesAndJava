@@ -1,17 +1,19 @@
 package swing.mainForm;
 
-import lombok.Getter;
 import runner.Runner;
 import swing.dataPanelTemplate.DataPanelTemplate;
+import utils.ExcelUtils.ExcelUtils;
 
 import javax.swing.*;
 import java.awt.*;
 
-@Getter
 public class MainForm extends JFrame {
     private JLabel txtTitle;
     private JPanel pnlMain;
 
+    /**
+     * update the main display
+     */
     public void updateDisplay(){
         //create a main panel
         JPanel mainPanel = new JPanel();
@@ -43,10 +45,31 @@ public class MainForm extends JFrame {
             template.getTxtQuantity().setText(Runner.listOfRows.get(i).get(5));
             template.getTxtDescription().setText(Runner.listOfRows.get(i).get(2));
 
-
             mainPanel.add(template);
+            template.activateOnTextChangeListeners();
             this.pack();
         }
         this.pack();
+
+    }
+
+
+    /**
+     * Auto save every 5 seconds
+     */
+    public void saveFile(){
+
+        Thread thread = new Thread(()->{
+            while (true) {
+                ExcelUtils.writeExcelFile(Runner.listOfRows);
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        thread.start();
     }
 }

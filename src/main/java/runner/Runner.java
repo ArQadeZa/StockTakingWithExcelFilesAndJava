@@ -1,7 +1,6 @@
 package runner;
 
 import lombok.SneakyThrows;
-import swing.dataPanelTemplate.DataPanelTemplate;
 import swing.mainForm.MainForm;
 import swing.saveFileForm.SelectFileForm;
 import utils.ExcelUtils.ExcelUtils;
@@ -42,5 +41,8 @@ public class Runner {
 
         //update the display
         mainForm.updateDisplay();
+
+        //activate autosaves
+        mainForm.saveFile();
     }
 }
