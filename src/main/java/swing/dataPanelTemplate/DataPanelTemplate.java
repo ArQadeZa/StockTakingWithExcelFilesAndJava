@@ -3,13 +3,16 @@ package swing.dataPanelTemplate;
 import lombok.Getter;
 import lombok.Setter;
 import runner.Runner;
-import utils.ExcelUtils.ExcelUtils;
+import utils.jsonSerializer.DataItem;
+import utils.jsonSerializer.JsonSerializer;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
-import java.util.Arrays;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Comparator;
 import java.util.List;
 
 @Getter
@@ -25,18 +28,14 @@ public class DataPanelTemplate extends JPanel {
     private JLabel lblCostToProduce;
     private JTextField txtCostToProduce;
     private JLabel lblQuantity;
-    private JTextField txtQuantity;
+    private JLabel txtQuantity;
     private JButton btnIncrease;
     private JButton btnDecrease;
     private JButton removeElementButton;
     private JTextArea txtDescription;
     private JButton btnAddElement;
 
-
-    //TODO: ADD FUNCTIONALITY TO + & - BUTTONS
     //TODO: ADD FUNCTIONALITY TO ADD BUTTON
-    //TODO: ADD FUNCTIONALITY TO UPDATE THE EXCEL FILE IF ANYTHING CHANGES
-    //TODO: ADD AUTO-SAVE FUNCTIONALITY WHEN ANYTHING IS CHANGED
     public DataPanelTemplate() {
         initComponents();
         setLayout(new FlowLayout(FlowLayout.LEFT));
@@ -45,23 +44,31 @@ public class DataPanelTemplate extends JPanel {
 
     /**
      * updates the data in the list based on what's populated in the textboxes
+     *
      * @param list -list that contains all the rows
-     * @param id - id of the lement in the row
+     * @param id   - id of the lement in the row
      */
-    public void updateList(List<List<String>> list, String id) {
-        List<String> rowWithId = list.stream().filter(l -> l.get(0).equals(id)).findFirst().get();
-        list.set(list.indexOf(rowWithId), Arrays.asList(id, txtColour.getText(), txtDescription.getText(), txtSellPrice.getText(), txtCostToProduce.getText(), txtQuantity.getText()));
+    public void updateList(List<DataItem> list, String id) {
+        DataItem rowWithId = list.stream().filter(p -> p.getTxtCode().equals(id)).findAny().get();
+        rowWithId.setTxtCode(id);
+        rowWithId.setTxtColour(txtColour.getText());
+        rowWithId.setTxtDescription(txtDescription.getText());
+        rowWithId.setTxtSellPrice(txtSellPrice.getText());
+        rowWithId.setTxtCostToProduce(txtCostToProduce.getText());
+        rowWithId.setTxtQuantity(txtQuantity.getText());
     }
 
     /**
      * Activates the event listeners for when the text in a text box changes
      */
-    public void activateOnTextChangeListeners(){
+    public void activateListeners() {
         txtColour.getDocument().addDocumentListener(this.getDocumentListener(txtCode.getText()));
         txtSellPrice.getDocument().addDocumentListener(this.getDocumentListener(txtCode.getText()));
         txtCostToProduce.getDocument().addDocumentListener(this.getDocumentListener(txtCode.getText()));
-        txtQuantity.getDocument().addDocumentListener(this.getDocumentListener(txtCode.getText()));
         txtDescription.getDocument().addDocumentListener(this.getDocumentListener(txtCode.getText()));
+        btnIncrease.addActionListener(getActionListenerIncrease());
+        btnDecrease.addActionListener(getActionListenerDecrease());
+        btnAddElement.addActionListener(getActionAddButton());
     }
 
     /**
@@ -83,11 +90,14 @@ public class DataPanelTemplate extends JPanel {
         txtCostToProduce = new JTextField(10);
 
         lblCostToProduce = new JLabel("Cost to Produce:");
-        txtQuantity = new JTextField(10);
+        txtQuantity = new JLabel();
+        txtQuantity.setFont(font);
 
         lblQuantity = new JLabel("Quantity:");
 
         btnIncrease = new JButton("+");
+
+
         btnDecrease = new JButton("-");
         removeElementButton = new JButton("Remove element");
 
@@ -100,16 +110,17 @@ public class DataPanelTemplate extends JPanel {
             if (response == 0) {
 
                 //find element that contains the code
-                List<String> line = Runner.listOfRows.stream().filter(l -> l.contains(code)).findAny().get();
+                DataItem dataItem = Runner.listOfRows.stream().filter(di -> di.getTxtCode().equals(code)).findAny().get();
+
                 //remove element
-                Runner.listOfRows.remove(line);
+                Runner.listOfRows.remove(dataItem);
 
                 //save changes to file
-                boolean saved = ExcelUtils.writeExcelFile(Runner.listOfRows);
+                boolean saved = JsonSerializer.serialize(Runner.listOfRows);
 
                 //Display message to say element has been removed
                 if (saved) {
-                    JOptionPane.showMessageDialog(Runner.mainForm, String.format("The element with code %s has been removed", line.get(0)));
+                    JOptionPane.showMessageDialog(Runner.mainForm, String.format("The element with code %s has been removed", dataItem.getTxtCode()));
                 }
 
                 //update ui
@@ -158,24 +169,126 @@ public class DataPanelTemplate extends JPanel {
 
     /**
      * Create a document listener for the text files
+     *
      * @return document listener
      */
-    private DocumentListener getDocumentListener(String id){
+    private DocumentListener getDocumentListener(String id) {
         return new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
-                updateList(Runner.listOfRows,id);
+                updateList(Runner.listOfRows, id);
             }
 
             @Override
             public void removeUpdate(DocumentEvent e) {
-                updateList(Runner.listOfRows,id);
+                updateList(Runner.listOfRows, id);
             }
 
             @Override
             public void changedUpdate(DocumentEvent e) {
-                updateList(Runner.listOfRows,id);
+                updateList(Runner.listOfRows, id);
             }
         };
     }
+
+    /**
+     * creating the onclick event for Decreasing the count
+     *
+     * @return Action listener
+     */
+    private ActionListener getActionListenerIncrease() {
+        String code = getTxtCode().getText();
+        return new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //get item
+                DataItem dataItem = Runner.listOfRows.stream().filter(di -> di.getTxtCode().equals(code)).findAny().get();
+
+                //update item quantity
+                dataItem.setTxtQuantity(String.valueOf(Integer.parseInt(dataItem.getTxtQuantity()) + 1));
+
+                //update the Ui
+                Runner.mainForm.updateDisplay();
+            }
+        };
+    }
+
+    /**
+     * creating the onclick event for Decreasing the count
+     *
+     * @return Action listener
+     */
+    private ActionListener getActionListenerDecrease() {
+        String code = getTxtCode().getText();
+        return new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //get item
+                DataItem dataItem = Runner.listOfRows.stream().filter(di -> di.getTxtCode().equals(code)).findAny().get();
+
+                //update item quantity
+                dataItem.setTxtQuantity(String.valueOf(Integer.parseInt(dataItem.getTxtQuantity()) - 1));
+
+                //update the Ui
+                Runner.mainForm.updateDisplay();
+            }
+        };
+    }
+
+    /**
+     * creating the onclick event for Adding a new product
+     *
+     * @return Action listener
+     */
+    private ActionListener getActionAddButton() {
+        String code = getTxtCode().getText();
+        return new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //enter details of element
+                String code = JOptionPane.showInputDialog("Enter the product code");
+                if (code != null && code.length() != 0) {
+                    String colour = JOptionPane.showInputDialog(String.format("Code:%s | please enter the product colour", code));
+                    if (colour != null && colour.length() != 0) {
+                        String sellPrice = JOptionPane.showInputDialog(String.format("Code:%s Colour:%s | please enter the sell price", code, colour)).toUpperCase();
+
+                        if (sellPrice != null && sellPrice.length() != 0) {
+                            //add Rand
+                            if (!sellPrice.contains("R")) {
+                                sellPrice = "R" + sellPrice;
+                            }
+                            String costToProduce = JOptionPane.showInputDialog(String.format("Code:%s Colour:%s Sell Price: %s | please enter the Cost to produce", code, colour, sellPrice));
+
+
+                            if (costToProduce != null && costToProduce.length() != 0) {
+                                //add Rand
+                                if (!costToProduce.contains("R")) {
+                                    costToProduce = "R" + costToProduce;
+                                }
+
+
+                                String quantity = JOptionPane.showInputDialog(String.format("Code:%s Colour:%s Sell Price:%s Cost to produce:%s | please enter the quantity", code, colour, sellPrice, costToProduce));
+                                if (quantity != null && quantity.length() != 0) {
+                                    String description = JOptionPane.showInputDialog(String.format("Code:%s Colour:%s Sell Price:%s Cost to produce:%s Quantity:%s | please enter the Description", code, colour, sellPrice, costToProduce, quantity));
+                                    if (description != null && description.length() != 0) {
+                                        // create object
+                                        DataItem dataItem = new DataItem(code, colour, sellPrice, costToProduce, quantity, description);
+
+                                        //add object to list
+                                        Runner.listOfRows.add(dataItem);
+
+                                        //update display
+                                        Runner.mainForm.updateDisplay();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+        };
+    }
 }
+
+
