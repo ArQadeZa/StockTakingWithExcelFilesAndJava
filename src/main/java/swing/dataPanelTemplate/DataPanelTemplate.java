@@ -12,7 +12,6 @@ import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Comparator;
 import java.util.List;
 
 @Getter
@@ -29,13 +28,16 @@ public class DataPanelTemplate extends JPanel {
     private JTextField txtCostToProduce;
     private JLabel lblQuantity;
     private JLabel txtQuantity;
+    private JLabel txtQuantitySold;
+    private JLabel lblQuantitySold;
     private JButton btnIncrease;
     private JButton btnDecrease;
+    private JButton btnIncreaseSold;
+    private JButton btnDecreaseSold;
     private JButton removeElementButton;
     private JTextArea txtDescription;
     private JButton btnAddElement;
 
-    //TODO: ADD FUNCTIONALITY TO ADD BUTTON
     public DataPanelTemplate() {
         initComponents();
         setLayout(new FlowLayout(FlowLayout.LEFT));
@@ -46,7 +48,7 @@ public class DataPanelTemplate extends JPanel {
      * updates the data in the list based on what's populated in the textboxes
      *
      * @param list -list that contains all the rows
-     * @param id   - id of the lement in the row
+     * @param id   - id of the element in the row
      */
     public void updateList(List<DataItem> list, String id) {
         DataItem rowWithId = list.stream().filter(p -> p.getTxtCode().equals(id)).findAny().get();
@@ -56,6 +58,7 @@ public class DataPanelTemplate extends JPanel {
         rowWithId.setTxtSellPrice(txtSellPrice.getText());
         rowWithId.setTxtCostToProduce(txtCostToProduce.getText());
         rowWithId.setTxtQuantity(txtQuantity.getText());
+        rowWithId.setTxtQuantitySold(txtQuantitySold.getText());
     }
 
     /**
@@ -68,6 +71,8 @@ public class DataPanelTemplate extends JPanel {
         txtDescription.getDocument().addDocumentListener(this.getDocumentListener(txtCode.getText()));
         btnIncrease.addActionListener(getActionListenerIncrease());
         btnDecrease.addActionListener(getActionListenerDecrease());
+        btnDecreaseSold.addActionListener(getActionListenerDecreaseSold());
+        btnIncreaseSold.addActionListener(getActionListenerIncreaseSold());
         btnAddElement.addActionListener(getActionAddButton());
     }
 
@@ -95,10 +100,16 @@ public class DataPanelTemplate extends JPanel {
 
         lblQuantity = new JLabel("Quantity:");
 
+        lblQuantitySold = new JLabel("Quantity Sold:");
+        txtQuantitySold = new JLabel();
+        txtQuantitySold.setFont(font);
+
+
         btnIncrease = new JButton("+");
-
-
         btnDecrease = new JButton("-");
+
+        btnIncreaseSold = new JButton("+");
+        btnDecreaseSold = new JButton("-");
         removeElementButton = new JButton("Remove element");
 
         //create an on click method for the button
@@ -152,16 +163,26 @@ public class DataPanelTemplate extends JPanel {
         add(lblCostToProduce);
         add(txtCostToProduce);
 
-        add(lblQuantity);
-        add(txtQuantity);
+        Panel quantity = new Panel();
+        add(quantity);
+        quantity.add(lblQuantity);
+        quantity.add(txtQuantity);
+        quantity.add(btnIncrease);
+        quantity.add(btnDecrease);
+
+
+        Panel quantitySold = new Panel();
+        add(quantitySold);
+        quantitySold.add(lblQuantitySold);
+        quantitySold.add(txtQuantitySold);
+        quantitySold.add(btnIncreaseSold);
+        quantitySold.add(btnDecreaseSold);
 
         add(lblDescription);
         add(new JScrollPane(txtDescription));
 
         add(new JPanel()); // Spacer or additional components can be added here
 
-        add(btnIncrease);
-        add(btnDecrease);
         add(removeElementButton);
         add(btnAddElement);
     }
@@ -187,6 +208,29 @@ public class DataPanelTemplate extends JPanel {
             @Override
             public void changedUpdate(DocumentEvent e) {
                 updateList(Runner.listOfRows, id);
+            }
+        };
+    }
+
+    /**
+     * creating the onclick event for Increasing the count of items sold and reducing the amount of stock left
+     *
+     * @return Action listener
+     */
+    private ActionListener getActionListenerIncreaseSold() {
+        String code = getTxtCode().getText();
+        return new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //get item
+                DataItem dataItem = Runner.listOfRows.stream().filter(di -> di.getTxtCode().equals(code)).findAny().get();
+
+                //update item quantity
+                dataItem.setTxtQuantity(String.valueOf(Integer.parseInt(dataItem.getTxtQuantity()) - 1));
+                dataItem.setTxtQuantitySold(String.valueOf(Integer.parseInt(dataItem.getTxtQuantitySold()) + 1));
+
+                //update the Ui
+                Runner.mainForm.updateDisplay();
             }
         };
     }
@@ -236,6 +280,28 @@ public class DataPanelTemplate extends JPanel {
     }
 
     /**
+     * creating the onclick event for Decreasing the count of items sold
+     *
+     * @return Action listener
+     */
+    private ActionListener getActionListenerDecreaseSold() {
+        String code = getTxtCode().getText();
+        return new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //get item
+                DataItem dataItem = Runner.listOfRows.stream().filter(di -> di.getTxtCode().equals(code)).findAny().get();
+
+                //update item quantity
+                dataItem.setTxtQuantitySold(String.valueOf(Integer.parseInt(dataItem.getTxtQuantitySold()) - 1));
+
+                //update the Ui
+                Runner.mainForm.updateDisplay();
+            }
+        };
+    }
+
+    /**
      * creating the onclick event for Adding a new product
      *
      * @return Action listener
@@ -271,8 +337,9 @@ public class DataPanelTemplate extends JPanel {
                                 if (quantity != null && quantity.length() != 0) {
                                     String description = JOptionPane.showInputDialog(String.format("Code:%s Colour:%s Sell Price:%s Cost to produce:%s Quantity:%s | please enter the Description", code, colour, sellPrice, costToProduce, quantity));
                                     if (description != null && description.length() != 0) {
+
                                         // create object
-                                        DataItem dataItem = new DataItem(code, colour, sellPrice, costToProduce, quantity, description);
+                                        DataItem dataItem = new DataItem(code, colour, sellPrice, costToProduce, quantity, description, "0");
 
                                         //add object to list
                                         Runner.listOfRows.add(dataItem);

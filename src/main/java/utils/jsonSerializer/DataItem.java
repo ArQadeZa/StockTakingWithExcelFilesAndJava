@@ -3,6 +3,8 @@ package utils.jsonSerializer;
 
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -16,5 +18,5 @@ public class DataItem {
     private String txtCostToProduce;
     private String txtQuantity;
     private String txtDescription;
-
+    private String txtQuantitySold;
 }

@@ -12,6 +12,7 @@ import java.awt.*;
 public class MainForm extends JFrame {
     private JLabel txtTitle;
     private JPanel pnlMain;
+    private int min = 5;
 
     /**
      * update the main display
@@ -46,6 +47,15 @@ public class MainForm extends JFrame {
             template.getTxtCostToProduce().setText(Runner.listOfRows.get(i).getTxtCostToProduce());
             template.getTxtQuantity().setText(Runner.listOfRows.get(i).getTxtQuantity());
             template.getTxtDescription().setText(Runner.listOfRows.get(i).getTxtDescription());
+            template.getTxtQuantitySold().setText(Runner.listOfRows.get(i).getTxtQuantitySold());
+
+            //flag for minimum value
+            if (Integer.parseInt(template.getTxtQuantity().getText()) <= 0) {
+                template.setBackground(Color.RED);
+                template.getBtnIncreaseSold().setEnabled(false);
+            }else if (Integer.parseInt(template.getTxtQuantity().getText()) < min) {
+                template.setBorder(BorderFactory.createLineBorder(Color.RED, 3));
+            }
 
             mainPanel.add(template);
             template.activateListeners();
