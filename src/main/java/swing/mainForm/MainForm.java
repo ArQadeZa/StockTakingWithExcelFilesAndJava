@@ -3,10 +3,14 @@ package swing.mainForm;
 import lombok.Getter;
 import runner.Runner;
 import swing.dataPanelTemplate.DataPanelTemplate;
+import swing.datePicker.DatePicker;
 import utils.jsonSerializer.JsonSerializer;
 
 import javax.swing.*;
 import java.awt.*;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 
 @Getter
 public class MainForm extends JFrame {
@@ -31,6 +35,56 @@ public class MainForm extends JFrame {
 
 
         this.setContentPane(scrollPane);
+        Button btnGenerateReport = new Button("Generate Report");
+        mainPanel.add(btnGenerateReport);
+
+        //on button click select a date
+        btnGenerateReport.addActionListener((a) -> {
+            SwingUtilities.invokeLater(() -> {
+                JFrame frame = new JFrame("Select the Starting date");
+                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                frame.setLayout(new FlowLayout());
+
+                //2 datepickers one for start date and other for end
+                DatePicker comp = new DatePicker();
+                frame.add(comp);
+                DatePicker comp2 = new DatePicker();
+                frame.add(comp2);
+
+                Button btn = new Button("Done");
+                btn.setVisible(true);
+
+                frame.add(btn);
+                frame.setVisible(true);
+                frame.pack();
+
+                //listener to save data to global variables
+                btn.addActionListener((r) -> {
+                    Runner.startDate = comp.getSelectedDate().toString();
+                    Runner.endDate = comp2.getSelectedDate().toString();
+                    JOptionPane.showMessageDialog(null, "Start Date Selected: " + Runner.startDate + "\nEnd Date Selected: " + Runner.endDate);
+
+                    frame.dispose();
+                });
+
+                //iterate through entire list to find all dates of items sold
+                for (int i = 0; i < Runner.listOfRows.size(); i++) {
+                    int itemsSold = 0;
+                    String[] itemsSoldArr = Runner.listOfRows.get(i).getItemSellTimes();
+                    //iterate through array of dates sold
+                    for (int j = 0; j < itemsSoldArr.length; j++) {
+                        if (LocalDate.parse(itemsSoldArr[j]).isBefore(LocalDate.parse(Runner.endDate)) && LocalDate.parse(itemsSoldArr[j]).isAfter(LocalDate.parse(Runner.startDate))) {
+                            ++itemsSold;
+                        }
+                    }
+
+                    //TODO: Add functionality to calculate costs and everything required on the report
+
+                }
+            });
+
+
+        });
 
         for (int i = 0; i < Runner.listOfRows.size(); i++) {
             //create a data panel

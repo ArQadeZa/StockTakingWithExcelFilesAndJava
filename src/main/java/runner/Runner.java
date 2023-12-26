@@ -12,6 +12,8 @@ import java.util.List;
 public class Runner {
     public static MainForm mainForm = new MainForm();
     public static List<DataItem> listOfRows;
+    public static String startDate;
+    public static String endDate;
 
     @SneakyThrows
     public static void main(String[] args) {
@@ -19,10 +21,9 @@ public class Runner {
 
         //set up properties of the main form
         mainForm.setTitle("Karduart");
-        mainForm.setLayout(new GridLayout(0, 1));
+        mainForm.setLayout(new GridLayout(1, 1));
         mainForm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // sets the close button of the frame
         mainForm.setVisible(true);
-
 
         //main flow
         mainForm.setSize(900, 900);
@@ -39,4 +40,5 @@ public class Runner {
 
         //TODO: add functionality to select all items sold from specific date to another and generate a report on the evaluated values
     }
+
 }

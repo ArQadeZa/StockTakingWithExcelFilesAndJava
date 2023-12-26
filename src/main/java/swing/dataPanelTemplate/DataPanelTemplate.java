@@ -12,7 +12,7 @@ import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -237,7 +237,7 @@ public class DataPanelTemplate extends JPanel {
                 //populate array
                 for (int i = 0; i < array.length; i++) {
                     if (i == array.length - 1) {
-                        array[i] = String.valueOf(LocalDateTime.now());
+                        array[i] = String.valueOf(LocalDate.now());
                     } else {
                         array[i] = dataItem.getItemSellTimes()[i];
                     }
