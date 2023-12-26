@@ -4,6 +4,7 @@ package utils.jsonSerializer;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -19,4 +20,5 @@ public class DataItem {
     private String txtQuantity;
     private String txtDescription;
     private String txtQuantitySold;
+    private String[] itemSellTimes;
 }

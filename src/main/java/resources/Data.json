@@ -1,1 +1,33 @@
-[{"txtCode":"K09","txtColour":"Tobacco","txtSellPrice":"R550,00","txtCostToProduce":"R123,00","txtQuantity":"0","txtDescription":"Full Grain leather Men's Bifold walletk","txtQuantitySold":"12"},{"txtCode":"K10","txtColour":"Tobacco","txtSellPrice":"R550,00","txtCostToProduce":"R123,00","txtQuantity":"6","txtDescription":"Full Grain leather Men's Bifold walletk","txtQuantitySold":"5"},{"txtCode":"K11","txtColour":"Tobac","txtSellPrice":"R12","txtCostToProduce":"R0","txtQuantity":"20","txtDescription":"aaksdjfhsdfkjha skjdhfkd jdhfj d fksj","txtQuantitySold":"0"}]
+[
+  {
+    "txtCode": "K09",
+    "txtColour": "Tobacco",
+    "txtSellPrice": "R550,00",
+    "txtCostToProduce": "R123,00",
+    "txtQuantity": "10",
+    "txtDescription": "Full Grain leather Men's Bifold walletk",
+    "txtQuantitySold": "0",
+    "itemSellTimes": []
+  },
+  {
+    "txtCode": "K10",
+    "txtColour": "Tobacco",
+    "txtSellPrice": "R550,00",
+    "txtCostToProduce": "R123,00",
+    "txtQuantity": "0",
+    "txtDescription": "Full Grain leather Men's Bifold walletk",
+    "txtQuantitySold": "10",
+    "itemSellTimes": [
+      "2023-12-26T19:41:16.354486189",
+      "2023-12-26T19:41:16.824836369",
+      "2023-12-26T19:41:17.139510912",
+      "2023-12-26T19:41:17.525787061",
+      "2023-12-26T19:41:17.744469394",
+      "2023-12-26T19:41:17.972542440",
+      "2023-12-26T19:41:18.172585726",
+      "2023-12-26T19:41:19.094516274",
+      "2023-12-26T19:41:19.411938263",
+      "2023-12-26T19:41:20.058604479"
+    ]
+  }
+]

@@ -12,6 +12,9 @@ import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Getter
@@ -139,7 +142,6 @@ public class DataPanelTemplate extends JPanel {
             }
         });
 
-
         lblDescription = new JLabel("Description:");
         txtDescription = new JTextArea(5, 20);
         txtDescription.setLineWrap(true);
@@ -169,7 +171,6 @@ public class DataPanelTemplate extends JPanel {
         quantity.add(txtQuantity);
         quantity.add(btnIncrease);
         quantity.add(btnDecrease);
-
 
         Panel quantitySold = new Panel();
         add(quantitySold);
@@ -228,6 +229,22 @@ public class DataPanelTemplate extends JPanel {
                 //update item quantity
                 dataItem.setTxtQuantity(String.valueOf(Integer.parseInt(dataItem.getTxtQuantity()) - 1));
                 dataItem.setTxtQuantitySold(String.valueOf(Integer.parseInt(dataItem.getTxtQuantitySold()) + 1));
+
+                //add timestamp
+                int length = dataItem.getItemSellTimes().length;
+                String[] array = new String[length + 1];
+
+                //populate array
+                for (int i = 0; i < array.length; i++) {
+                    if (i == array.length - 1) {
+                        array[i] = String.valueOf(LocalDateTime.now());
+                    } else {
+                        array[i] = dataItem.getItemSellTimes()[i];
+                    }
+                }
+
+                //set new array
+                dataItem.setItemSellTimes(array);
 
                 //update the Ui
                 Runner.mainForm.updateDisplay();
@@ -295,6 +312,8 @@ public class DataPanelTemplate extends JPanel {
                 //update item quantity
                 dataItem.setTxtQuantitySold(String.valueOf(Integer.parseInt(dataItem.getTxtQuantitySold()) - 1));
 
+                dataItem.setItemSellTimes(Arrays.copyOf(dataItem.getItemSellTimes(), dataItem.getItemSellTimes().length - 1));
+
                 //update the Ui
                 Runner.mainForm.updateDisplay();
             }
@@ -339,7 +358,7 @@ public class DataPanelTemplate extends JPanel {
                                     if (description != null && description.length() != 0) {
 
                                         // create object
-                                        DataItem dataItem = new DataItem(code, colour, sellPrice, costToProduce, quantity, description, "0");
+                                        DataItem dataItem = new DataItem(code, colour, sellPrice, costToProduce, quantity, description, "0", new String[]{});
 
                                         //add object to list
                                         Runner.listOfRows.add(dataItem);

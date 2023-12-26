@@ -53,8 +53,14 @@ public class MainForm extends JFrame {
             if (Integer.parseInt(template.getTxtQuantity().getText()) <= 0) {
                 template.setBackground(Color.RED);
                 template.getBtnIncreaseSold().setEnabled(false);
-            }else if (Integer.parseInt(template.getTxtQuantity().getText()) < min) {
+                template.getBtnDecrease().setEnabled(false);
+
+            } else if (Integer.parseInt(template.getTxtQuantity().getText()) < min) {
                 template.setBorder(BorderFactory.createLineBorder(Color.RED, 3));
+            }
+
+            if (Integer.parseInt(template.getTxtQuantitySold().getText()) <= 0) {
+                template.getBtnDecreaseSold().setEnabled(false);
             }
 
             mainPanel.add(template);
