@@ -2,18 +2,22 @@
   {
     "txtCode": "K09",
     "txtColour": "Tobacco",
-    "txtSellPrice": "R550,00",
-    "txtCostToProduce": "R123,00",
-    "txtQuantity": "10",
+    "txtSellPrice": "R550.00",
+    "txtCostToProduce": "R123.00",
+    "txtQuantity": "7",
     "txtDescription": "Full Grain leather Men's Bifold walletk",
-    "txtQuantitySold": "0",
-    "itemSellTimes": []
+    "txtQuantitySold": "3",
+    "itemSellTimes": [
+      "2023-12-27",
+      "2023-12-27",
+      "2023-12-27"
+    ]
   },
   {
     "txtCode": "K10",
     "txtColour": "Tobacco",
-    "txtSellPrice": "R550,00",
-    "txtCostToProduce": "R123,00",
+    "txtSellPrice": "R100",
+    "txtCostToProduce": "R123.00",
     "txtQuantity": "13",
     "txtDescription": "Full Grain leather Men's Bifold walletk",
     "txtQuantitySold": "2",

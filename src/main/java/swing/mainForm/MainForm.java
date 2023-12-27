@@ -4,13 +4,17 @@ import lombok.Getter;
 import runner.Runner;
 import swing.dataPanelTemplate.DataPanelTemplate;
 import swing.datePicker.DatePicker;
+import swing.reportPanelTemplate.ReportPanelTemplate;
+import utils.jsonSerializer.DataItem;
 import utils.jsonSerializer.JsonSerializer;
 
 import javax.swing.*;
 import java.awt.*;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 public class MainForm extends JFrame {
@@ -65,22 +69,54 @@ public class MainForm extends JFrame {
                     JOptionPane.showMessageDialog(null, "Start Date Selected: " + Runner.startDate + "\nEnd Date Selected: " + Runner.endDate);
 
                     frame.dispose();
-                });
 
-                //iterate through entire list to find all dates of items sold
-                for (int i = 0; i < Runner.listOfRows.size(); i++) {
-                    int itemsSold = 0;
-                    String[] itemsSoldArr = Runner.listOfRows.get(i).getItemSellTimes();
-                    //iterate through array of dates sold
-                    for (int j = 0; j < itemsSoldArr.length; j++) {
-                        if (LocalDate.parse(itemsSoldArr[j]).isBefore(LocalDate.parse(Runner.endDate)) && LocalDate.parse(itemsSoldArr[j]).isAfter(LocalDate.parse(Runner.startDate))) {
-                            ++itemsSold;
+                    //iterate through entire list to find all dates of items sold
+                    List<ReportPanelTemplate> list = new ArrayList<>();
+                    for (int i = 0; i < Runner.listOfRows.size(); i++) {
+                        int itemsSold = 0;
+                        String[] itemsSoldArr = Runner.listOfRows.get(i).getItemSellTimes();
+
+                        //iterate through array of dates sold
+                        for (int j = 0; j < itemsSoldArr.length; j++) {
+                            if (
+                                    (LocalDate.parse(itemsSoldArr[j]).isBefore(LocalDate.parse(Runner.endDate)) || (LocalDate.parse(itemsSoldArr[j]).isEqual(LocalDate.parse(Runner.endDate))))
+                                            &&
+                                    (LocalDate.parse(itemsSoldArr[j]).isAfter(LocalDate.parse(Runner.startDate)) || LocalDate.parse(itemsSoldArr[j]).isEqual(LocalDate.parse(Runner.startDate)))
+                            ){
+                                ++itemsSold;
+                            }
+                        }
+
+                        //add template to list
+                        DataItem dataItem = Runner.listOfRows.get(i);
+
+                        double cost = Double.parseDouble(dataItem.getTxtCostToProduce().replace("R", "").replace(",", "."));
+                        double sellPrice = Double.parseDouble(dataItem.getTxtSellPrice().replace("R", "").replace(",", "."));
+
+                        //calculate the profit or loss
+                        double calculatedValue = (sellPrice - cost) * itemsSold;
+                        if (itemsSold > 0) {
+                            list.add(new ReportPanelTemplate(dataItem.getTxtCode(), itemsSold + "", dataItem.getTxtCostToProduce(), dataItem.getTxtSellPrice(), "Calculated Value: R" + calculatedValue + ""));
                         }
                     }
 
-                    //TODO: Add functionality to calculate costs and everything required on the report
+                    JFrame reportFrame = new JFrame(String.format("Report for %s to %s ", Runner.startDate, Runner.endDate));
+                    reportFrame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+                    reportFrame.setLayout(new GridLayout(0, 1));
+                    reportFrame.setSize(900, 900);
 
-                }
+                    for (ReportPanelTemplate panel : list) {
+                        reportFrame.add(panel);
+                    }
+
+                    reportFrame.pack();
+                    reportFrame.setVisible(true);
+
+                    //TODO: Add functionality to calculate costs and everything required on the report
+                    //TODO: Code , QTY , Cost to produce ,Sell price , Totals to discern if its profitable or not
+                });
+
+
             });
 
 
