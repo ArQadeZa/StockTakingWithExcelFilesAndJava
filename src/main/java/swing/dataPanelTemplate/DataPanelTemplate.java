@@ -153,6 +153,7 @@ public class DataPanelTemplate extends JPanel {
      * add the components to the display panel\
      */
     private void addComponentsToPanel() {
+
         add(lblCode);
         add(txtCode);
 
@@ -181,8 +182,6 @@ public class DataPanelTemplate extends JPanel {
 
         add(lblDescription);
         add(new JScrollPane(txtDescription));
-
-        add(new JPanel()); // Spacer or additional components can be added here
 
         add(removeElementButton);
         add(btnAddElement);
@@ -311,7 +310,7 @@ public class DataPanelTemplate extends JPanel {
 
                 //update item quantity
                 dataItem.setTxtQuantitySold(String.valueOf(Integer.parseInt(dataItem.getTxtQuantitySold()) - 1));
-
+                dataItem.setTxtQuantity(Integer.parseInt(dataItem.getTxtQuantity()) + 1 + "");
                 dataItem.setItemSellTimes(Arrays.copyOf(dataItem.getItemSellTimes(), dataItem.getItemSellTimes().length - 1));
 
                 //update the Ui
