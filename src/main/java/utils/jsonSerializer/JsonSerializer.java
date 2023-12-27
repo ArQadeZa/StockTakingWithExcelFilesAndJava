@@ -3,9 +3,12 @@ package utils.jsonSerializer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
+import runner.Runner;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 
 public class JsonSerializer {
@@ -18,8 +21,11 @@ public class JsonSerializer {
         //read data from json file
         ObjectMapper objectMapper = new ObjectMapper();
         List<DataItem> dataItems;
+
         try {
-            dataItems  = objectMapper.readValue(new File("src/main/java/resources/Data.json"), objectMapper.getTypeFactory().constructCollectionType(List.class, DataItem.class));
+            InputStream inputStream = Runner.class.getClassLoader().getResourceAsStream("Data.json");
+//            dataItems  = objectMapper.readValue(new File("src/main/java/resources/Data.json"), objectMapper.getTypeFactory().constructCollectionType(List.class, DataItem.class));
+            dataItems  = objectMapper.readValue(inputStream, objectMapper.getTypeFactory().constructCollectionType(List.class, DataItem.class));
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
@@ -35,8 +41,10 @@ public class JsonSerializer {
      */
     public static boolean serialize(List<DataItem> list){
         try {
+            OutputStream outputStream = Runner.class.getClassLoader().getResource("Data.json").openConnection().getOutputStream();
             ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.writeValue(new File("src/main/java/resources/Data.json"),list);
+//            objectMapper.writeValue(new File("src/main/java/resources/Data.json"),list);
+            objectMapper.writeValue(outputStream,list);
             return true;
         } catch (IOException e) {
             return false;
