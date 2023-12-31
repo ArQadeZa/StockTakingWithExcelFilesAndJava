@@ -340,14 +340,17 @@ public class DataPanelTemplate extends JPanel {
                     String colour = JOptionPane.showInputDialog(String.format("Code:%s | please enter the product colour", code));
                     if (colour != null && colour.length() != 0) {
                         String sellPrice = JOptionPane.showInputDialog(String.format("Code:%s Colour:%s | please enter the sell price", code, colour)).toUpperCase();
+                        sellPrice = validateNumbers(sellPrice);
 
-                        if (sellPrice != null && sellPrice.length() != 0) {
+
+                        if ((sellPrice != null && sellPrice.length() != 0)) {
                             //add Rand
+
                             if (!sellPrice.contains("R")) {
                                 sellPrice = "R" + sellPrice;
                             }
                             String costToProduce = JOptionPane.showInputDialog(String.format("Code:%s Colour:%s Sell Price: %s | please enter the Cost to produce", code, colour, sellPrice));
-
+                            costToProduce = validateNumbers(costToProduce);
 
                             if (costToProduce != null && costToProduce.length() != 0) {
                                 //add Rand
@@ -357,6 +360,8 @@ public class DataPanelTemplate extends JPanel {
 
 
                                 String quantity = JOptionPane.showInputDialog(String.format("Code:%s Colour:%s Sell Price:%s Cost to produce:%s | please enter the quantity", code, colour, sellPrice, costToProduce));
+                                quantity = validateNumbers(quantity);
+
                                 if (quantity != null && quantity.length() != 0) {
                                     String description = JOptionPane.showInputDialog(String.format("Code:%s Colour:%s Sell Price:%s Cost to produce:%s Quantity:%s | please enter the Description", code, colour, sellPrice, costToProduce, quantity));
                                     if (description != null && description.length() != 0) {
@@ -378,6 +383,21 @@ public class DataPanelTemplate extends JPanel {
                         }
                     }
                 }
+            }
+
+            private static String validateNumbers(String sellPrice) {
+                while (true) {
+//                        check if sell price is a number or not
+                    try {
+                        Double.parseDouble(sellPrice.toUpperCase().replace(",","."));
+                        break;
+                    } catch (NumberFormatException ex) {
+                        JOptionPane.showMessageDialog(null, "Sell Price is not a valid number: " + sellPrice, "Error", JOptionPane.ERROR_MESSAGE);
+                        //Re-prompt the user for the correct amount
+                        sellPrice = JOptionPane.showInputDialog("Please enter the correct sell price").toUpperCase().replace(",",".");
+                    }
+                }
+                return sellPrice;
             }
 
             /**
