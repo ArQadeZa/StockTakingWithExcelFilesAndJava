@@ -340,19 +340,17 @@ public class DataPanelTemplate extends JPanel {
                     String colour = JOptionPane.showInputDialog(String.format("Code:%s | please enter the product colour", code));
                     if (colour != null && colour.length() != 0) {
                         String sellPrice = JOptionPane.showInputDialog(String.format("Code:%s Colour:%s | please enter the sell price", code, colour)).toUpperCase();
-                        sellPrice = validateNumbers(sellPrice);
-
 
                         if ((sellPrice != null && sellPrice.length() != 0)) {
-                            //add Rand
+                            sellPrice = validateNumbers(sellPrice);
 
                             if (!sellPrice.contains("R")) {
                                 sellPrice = "R" + sellPrice;
                             }
                             String costToProduce = JOptionPane.showInputDialog(String.format("Code:%s Colour:%s Sell Price: %s | please enter the Cost to produce", code, colour, sellPrice));
-                            costToProduce = validateNumbers(costToProduce);
 
                             if (costToProduce != null && costToProduce.length() != 0) {
+                                costToProduce = validateNumbers(costToProduce);
                                 //add Rand
                                 if (!costToProduce.contains("R")) {
                                     costToProduce = "R" + costToProduce;
@@ -360,9 +358,9 @@ public class DataPanelTemplate extends JPanel {
 
 
                                 String quantity = JOptionPane.showInputDialog(String.format("Code:%s Colour:%s Sell Price:%s Cost to produce:%s | please enter the quantity", code, colour, sellPrice, costToProduce));
-                                quantity = validateNumbers(quantity);
 
                                 if (quantity != null && quantity.length() != 0) {
+                                    quantity = validateNumbers(quantity);
                                     String description = JOptionPane.showInputDialog(String.format("Code:%s Colour:%s Sell Price:%s Cost to produce:%s Quantity:%s | please enter the Description", code, colour, sellPrice, costToProduce, quantity));
                                     if (description != null && description.length() != 0) {
 
