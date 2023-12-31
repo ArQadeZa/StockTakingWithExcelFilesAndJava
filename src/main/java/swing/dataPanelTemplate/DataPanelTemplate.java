@@ -13,7 +13,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -324,14 +323,20 @@ public class DataPanelTemplate extends JPanel {
      *
      * @return Action listener
      */
-    private ActionListener getActionAddButton() {
+    public ActionListener getActionAddButton() {
         String code = getTxtCode().getText();
         return new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 //enter details of element
-                String code = JOptionPane.showInputDialog("Enter the product code");
-                if (code != null && code.length() != 0) {
+
+                // if element contains the same code it should prompt for another
+                String code;
+                int count;
+
+                code = getUniqueCode();
+
+                if (code != null && !code.isEmpty()) {
                     String colour = JOptionPane.showInputDialog(String.format("Code:%s | please enter the product colour", code));
                     if (colour != null && colour.length() != 0) {
                         String sellPrice = JOptionPane.showInputDialog(String.format("Code:%s Colour:%s | please enter the sell price", code, colour)).toUpperCase();
@@ -364,12 +369,38 @@ public class DataPanelTemplate extends JPanel {
 
                                         //update display
                                         Runner.mainForm.updateDisplay();
+
+                                        //Save file
+                                        Runner.mainForm.saveFile();
                                     }
                                 }
                             }
                         }
                     }
                 }
+            }
+
+            /**
+             * Get a unique item code from the user
+             * @return unique item code
+             */
+            private static String getUniqueCode() {
+                String code;
+                int count;
+                do {
+                    count = 0;
+                    code = JOptionPane.showInputDialog("Enter the product code");
+
+                    for (DataItem item : Runner.listOfRows) {
+                        if (item.getTxtCode().equals(code)) {
+                            ++count;
+                            JOptionPane.showMessageDialog(null, "Cannot have the same code twice: " + code, "ERROR", JOptionPane.ERROR_MESSAGE);
+                        }
+                    }
+
+                }
+                while (count != 0);
+                return code;
             }
 
         };

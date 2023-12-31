@@ -37,8 +37,5 @@ public class Runner {
 
         //activate autosaves
         mainForm.saveFile();
-
-        //TODO: add functionality to select all items sold from specific date to another and generate a report on the evaluated values
     }
-
 }

@@ -42,7 +42,23 @@ public class MainForm extends JFrame {
         Button btnGenerateReport = new Button("Generate Report");
         mainPanel.add(btnGenerateReport);
 
-        //on button click select a date
+        //on button click select a date and generate a report based off the selected dates
+        onClickForGeneratingAReport(btnGenerateReport);
+
+        //iterates through the main list and creates objects of each item in the list and displays them on the main panel=
+        iterateThroughListAndDisplayDataTemplates(mainPanel);
+
+        //add, add button
+        addButtonToAddNewProduct(mainPanel);
+
+        //Save file
+        Runner.mainForm.saveFile();
+
+        this.repaint();
+
+    }
+
+    private static void onClickForGeneratingAReport(Button btnGenerateReport) {
         btnGenerateReport.addActionListener((a) -> {
             SwingUtilities.invokeLater(() -> {
                 JFrame frame = new JFrame("Select the Starting date");
@@ -81,8 +97,8 @@ public class MainForm extends JFrame {
                             if (
                                     (LocalDate.parse(itemsSoldArr[j]).isBefore(LocalDate.parse(Runner.endDate)) || (LocalDate.parse(itemsSoldArr[j]).isEqual(LocalDate.parse(Runner.endDate))))
                                             &&
-                                    (LocalDate.parse(itemsSoldArr[j]).isAfter(LocalDate.parse(Runner.startDate)) || LocalDate.parse(itemsSoldArr[j]).isEqual(LocalDate.parse(Runner.startDate)))
-                            ){
+                                            (LocalDate.parse(itemsSoldArr[j]).isAfter(LocalDate.parse(Runner.startDate)) || LocalDate.parse(itemsSoldArr[j]).isEqual(LocalDate.parse(Runner.startDate)))
+                            ) {
                                 ++itemsSold;
                             }
                         }
@@ -112,16 +128,13 @@ public class MainForm extends JFrame {
                     reportFrame.pack();
                     reportFrame.setVisible(true);
 
-                    //TODO: Add functionality to calculate costs and everything required on the report
-                    //TODO: Code , QTY , Cost to produce ,Sell price , Totals to discern if its profitable or not
                 });
 
-
             });
-
-
         });
+    }
 
+    private void iterateThroughListAndDisplayDataTemplates(JPanel mainPanel) {
         for (int i = 0; i < Runner.listOfRows.size(); i++) {
             //create a data panel
             DataPanelTemplate template = new DataPanelTemplate();
@@ -157,13 +170,24 @@ public class MainForm extends JFrame {
             template.activateListeners();
             this.pack();
         }
-        this.repaint();
+    }
 
+    /**
+     * Adds a button to the main panel to add a new element
+     * @param mainPanel - panel on which to add the button
+     */
+    private void addButtonToAddNewProduct(JPanel mainPanel) {
+        if(Runner.listOfRows.isEmpty()){
+            JButton btnAddElement = new DataPanelTemplate().getBtnAddElement();
+            btnAddElement.addActionListener(new DataPanelTemplate().getActionAddButton());
+            mainPanel.add(btnAddElement);
+            this.pack();
+        }
     }
 
 
     /**
-     * Auto save every 5 seconds
+     * Auto save every 2 seconds
      */
     public void saveFile() {
 
@@ -172,7 +196,7 @@ public class MainForm extends JFrame {
                 if (Runner.listOfRows.size() > 0) {
                     JsonSerializer.serialize(Runner.listOfRows);
                     try {
-                        Thread.sleep(5000);
+                        Thread.sleep(2000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
